@@ -1,7 +1,7 @@
 Fina
 ====
 
-The netfilter script for the admin that knows what he's doing.
+The Netfilter script for the admin that knows what he's doing.
 
 This file describes how Fina works and why it does it the way it does.
 If you need a quick start in setting up Fina, look at the file INSTALL
@@ -19,17 +19,17 @@ remotely. No matter how great a script is, if it takes ages to update
 fourteen web servers of a cluster, it's useless to me.
 
 Another basic need for such a script is that it has to be secure by
-default - without getting into the admins way too much. That is to say, it
-doesn't create rules that the admin expressly configures. Of course, a
+default - without getting into the admins way too much. That is to say,
+it only creates rules that the admin expressly configures. Of course, a
 sensible set of configuration /examples/ is provided.
 
-The third hard requirement is that the scriptshould be capable of doing
+The third hard requirement is that the script should be capable of doing
 everything Netfilter can. That means that no matter how complicated your
-NAT and Prerouting magic needs are, the script must be able to handle
+NAT and prerouting magic needs are, the script must be able to handle
 it. One side effect of this is, that it must handle huge filter sets at
 least as easily as Netfilter itself.
 
-Finally, the script should be lightweight, having as fe external
+Finally, the script should be lightweight, having as few external
 dependencies as possible. Also, the script itself should be as simple
 and small as possible. This is because simple things have fewer ways in
 which they can fail.
@@ -44,11 +44,11 @@ target of specs to adhere to.
 
 Basically, Fina assembles an iptables-restore compatible rule dump from
 snippets configure/edited by the admin of the machine. It then tries to
-load the whole set. If this fails in any way, the old ruleset is
+load the whole set. If this fails in any way, the old rule set is
 restored.
 
 Naturally, this means that Fina does next to nothing for the admin
-when it comes to /generating/ rules on the machine. This is a concious
+when it comes to /generating/ rules on the machine. This is a conscious
 decision. For one, whoever uses/configures a packet filter should be
 aware of all the consequences of his actions. This includes for example
 knowing why it is bad to drop all ICMP traffic.
@@ -80,11 +80,11 @@ have reliable order when assembling, the files are usually prefixed with
 two- or three-digit numbers. 
 
 The expected format of the files is of no concern to Fina. Fina itself
-will only assemble them in order into a file. After this, it will make a
-backup of the current rule set (using iptables-save) and put it in a
+will only assemble them in order into one file. After this, it will make
+a backup of the current rule set (using iptables-save) and put it in a
 location specified in /etc/fina/fina.cfg. Then, Fina will try to load
 the generated file using iptables-restore. If this fails for whatever
-reason, it will try to load the old ruleset and exhibit an appropriate
+reason, it will try to load the old rule set and exhibit an appropriate
 error message plus whatever message it got from the failing
 iptables-restore command. Fina can also be configured to keep a history
 of old rule sets.
@@ -97,10 +97,11 @@ design as in its dependencies. As such, it was written as a bash script.
 The choice of bash (vs. Bourne or Korn Shell) is its ubiquity on Linux
 systems (and Netfilter is pretty much exclusive to Linux systems). On
 top of bash (version 2 or higher), Fina uses GNU find to traverse its
-config directory. Other versions of find will usually work, but if they
-don't the find call(s) in Finas source can probably be adjusted
+configuration directory. Other versions of find will usually work, but
+if they don't the find call(s) in Finas source can probably be adjusted
 accordingly. If Fina is used to load Netfilter modules, it will of
 course the modutils/module-init-tools for the kernel it's used with.
+Finally (and obviously), Fina needs iptables-save and iptables-restore.
 
 Other functionality
 -------------------
