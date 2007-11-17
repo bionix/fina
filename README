@@ -1,0 +1,149 @@
+Fina
+====
+
+The netfilter script for the admin that knows what he's doing.
+
+This file describes how Fina works and why it does it the way it does.
+If you need a quick start in setting up Fina, look at the file INSTALL
+that came with the package.
+
+Introduction
+------------
+
+Fina is the result of working with various attempts at wrapping iptables
+(rather: Netfilter) with scripts and other infrastructure in order to
+make daily administration of rules easier. 
+
+Due to my job, I've always needed a script that can easily be automated
+remotely. No matter how great a script is, if it takes ages to update
+fourteen web servers of a cluster, it's useless to me.
+
+Another basic need for such a script is that it has to be secure by
+default - without getting into the admins way too much. That is to say, it
+doesn't create rules that the admin expressly configures. Of course, a
+sensible set of configuration /examples/ is provided.
+
+The third hard requirement is that the scriptshould be capable of doing
+everything Netfilter can. That means that no matter how complicated your
+NAT and Prerouting magic needs are, the script must be able to handle
+it. One side effect of this is, that it must handle huge filter sets at
+least as easily as Netfilter itself.
+
+Finally, the script should be lightweight, having as fe external
+dependencies as possible. Also, the script itself should be as simple
+and small as possible. This is because simple things have fewer ways in
+which they can fail.
+
+Design
+------
+
+Due to the four hard requirements mentioned above, the script doesn't
+actually "know" all that much about Netfilter. This way, it easily
+incorporates everything Netfilter can do - without having a moving
+target of specs to adhere to.
+
+Basically, Fina assembles an iptables-restore compatible rule dump from
+snippets configure/edited by the admin of the machine. It then tries to
+load the whole set. If this fails in any way, the old ruleset is
+restored.
+
+Naturally, this means that Fina does next to nothing for the admin
+when it comes to /generating/ rules on the machine. This is a concious
+decision. For one, whoever uses/configures a packet filter should be
+aware of all the consequences of his actions. This includes for example
+knowing why it is bad to drop all ICMP traffic.
+
+Another reason is that providing examples or even recipes for packet
+filters is something /documentation/ should do. It's not a good idea to
+have a black box do "simply the right thing". Usually, there is a
+non-trivial amount of users for which The Right Thing can't be easily
+guessed.
+
+How it works
+------------
+
+Fina expects one configuration file, /etc/fina/fina.cfg. This is
+actually simply a shell script that is sourced from the main Fina
+script. It contains (by default) variables that specify at least two
+additional locations. First, a file that contains a list of kernel
+modules that should be loaded before the rule set is loaded. This is
+mainly for the boot phase. Actually, the necessary Netfilter rules
+should be configured in the distribution's startup script, but this file
+is for those distributions where no such file exists or it is unusable
+for other reasons.
+
+The second location is more important. It specifies the directory which
+contains the rule snippets that Fina should assemble. Usually, this is
+located at /etc/fina/rules.d/. Fina then proceeds to load all files from
+said directory (and its sub-directories) that end in .rules. In order to
+have reliable order when assembling, the files are usually prefixed with
+two- or three-digit numbers. 
+
+The expected format of the files is of no concern to Fina. Fina itself
+will only assemble them in order into a file. After this, it will make a
+backup of the current rule set (using iptables-save) and put it in a
+location specified in /etc/fina/fina.cfg. Then, Fina will try to load
+the generated file using iptables-restore. If this fails for whatever
+reason, it will try to load the old ruleset and exhibit an appropriate
+error message plus whatever message it got from the failing
+iptables-restore command. Fina can also be configured to keep a history
+of old rule sets.
+
+Dependencies
+------------
+
+As mentioned above, Fina is designed to be lightweigth both in its own
+design as in its dependencies. As such, it was written as a bash script.
+The choice of bash (vs. Bourne or Korn Shell) is its ubiquity on Linux
+systems (and Netfilter is pretty much exclusive to Linux systems). On
+top of bash (version 2 or higher), Fina uses GNU find to traverse its
+config directory. Other versions of find will usually work, but if they
+don't the find call(s) in Finas source can probably be adjusted
+accordingly. If Fina is used to load Netfilter modules, it will of
+course the modutils/module-init-tools for the kernel it's used with.
+
+Other functionality
+-------------------
+
+In addition to generating and then directly loading a rule set, Fina can
+also simply dump the file it would load to stdout ("pretend mode"). This
+is useful if you suspect a bug in your Netfilter snippets and want to
+take a look at the set before trying to load it. Fina adds a plethora of
+comments to the generated file to make debugging easier. Using Finas
+pretend mode, you can also ensure that Fina can read all the files it
+should.
+
+Also, this way you can create diffs between your currently running rules
+and the rules Fina would generate. This way, you can easily spot if the
+changes in the rules snippets have the expected results.
+
+Keep in mind though that in this mode, Fina has no way of telling if
+what it generates can actually be loaded with iptables-restore.
+Unfortunately, the kernel interface does not provide a means to see if a
+rule set could be loaded without actually activating it (if I'm wrong
+here, I'd be glad to hear about such functionality).
+
+Feedback
+--------
+
+If you have comments, remarks, bug reports, wishes, feature suggestions
+etc, don't hesitate to contact me:
+
+	klausman-fina at schwarzvogel.de
+
+The latest version of Fina can always be found here:
+
+	http://www.schwarzvogel.de/
+
+License
+-------
+
+Fina is released under the GPLv2. That is to say version 2, and only
+that, not any later or earlier version. The package you downloaded
+should contain a file called COPYING that contains the license.
+
+
+
+
+
+
