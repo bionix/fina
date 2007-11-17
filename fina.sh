@@ -27,7 +27,7 @@ function print_help() {
     echo "   or: ${PROGNAME} [OPTIONS]" >&2
     echo "" >&2
     echo "Options:" >&2
-    echo "   -p, --pretend    Do not activate rules, just print them to stdout." >&2
+    echo "   -p, --pretend    Don't load rules, just print them to stdout." >&2
     echo "   -k, --keep       Keep files generated in /tmp" >&2
     echo "" >&2
 }
