@@ -28,6 +28,7 @@ function print_help() {
     echo "   or: ${PROGNAME} [OPTIONS]" 
     echo "" 
     echo "Options:" 
+    echo "   -v, --version    Output script version, then exit."
     echo "   -p, --pretend    Don't load rules, just print them to stdout. (default)" 
     echo "   -l, --load       Create rules and load them" 
     echo "   -t, --terse      Remove all comments and empty lines from output when in"
@@ -37,6 +38,17 @@ function print_help() {
     echo "The modes -p and -l are mutually exclusive, the last one of those encountered"
     echo "on the command line is used."
     } >&2
+}
+
+function print_version() {
+    echo "Fina v$VERSION"
+    echo "\$Revision$"
+    echo "(C) 2007 Tobias Klausmann." 
+    echo "This is free software.  You may redistribute copies of it under the terms of"
+    echo "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>."
+    echo "There is NO WARRANTY, to the extent permitted by law."
+
+
 }
 
 # Debug printing 
@@ -97,6 +109,10 @@ while test -n "$1"; do
     case "$1" in
         --help|-h)
             print_help
+            exit 0
+            ;;
+        --version|-v)
+            print_version
             exit 0
             ;;
         --pretend|-p)
