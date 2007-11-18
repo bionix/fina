@@ -43,11 +43,10 @@ function print_help() {
 function print_version() {
     echo "Fina v$VERSION"
     echo "(C) 2007 Tobias Klausmann." 
-    echo "This is free software.  You may redistribute copies of it under the terms of"
-    echo "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>."
+    echo "This is free software"  
+    echo "You may redistribute copies of it under the terms of the GNU GPLv2"
+    echo "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
     echo "There is NO WARRANTY, to the extent permitted by law."
-
-
 }
 
 # Debug printing 
