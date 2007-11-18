@@ -42,7 +42,6 @@ function print_help() {
 
 function print_version() {
     echo "Fina v$VERSION"
-    echo "\$Revision$"
     echo "(C) 2007 Tobias Klausmann." 
     echo "This is free software.  You may redistribute copies of it under the terms of"
     echo "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>."
