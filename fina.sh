@@ -19,17 +19,24 @@ IPTSAVE=$(which iptables-save)
 
 PROGNAME="$0"
 VERSION="0.1"
-DEBUG="1"
+DEBUG="0"
 
 # Help function
 function print_help() {
-    echo "Usage: ${PROGNAME} --help|-h" >&2
-    echo "   or: ${PROGNAME} [OPTIONS]" >&2
-    echo "" >&2
-    echo "Options:" >&2
-    echo "   -p, --pretend    Don't load rules, just print them to stdout." >&2
-    echo "   -k, --keep       Keep files generated in /tmp" >&2
-    echo "" >&2
+    {
+    echo "Usage: ${PROGNAME} --help|-h"
+    echo "   or: ${PROGNAME} [OPTIONS]" 
+    echo "" 
+    echo "Options:" 
+    echo "   -p, --pretend    Don't load rules, just print them to stdout. (default)" 
+    echo "   -l, --load       Create rules and load them" 
+    echo "   -t, --terse      Remove all comments and empty lines from output when in"
+    echo "                    'pretend' mode"
+    echo "   -k, --keep       Keep files generated in /tmp"
+    echo "" 
+    echo "The modes -p and -l are mutually exclusive, the last one of those encountered"
+    echo "on the command line is used."
+    } >&2
 }
 
 # Debug printing 
@@ -42,6 +49,12 @@ function dprint() {
 # Error printing 
 function eprint() {
     echo  -e "$@" >&2
+}
+
+# Exit with message and error code
+function die() {
+    eprint "$@"
+    exit -1
 }
 
 # Function that retrieves all rule files in lexical order
@@ -72,10 +85,12 @@ function get_tmpdir () {
 }
 
 # Defaults
-PRETEND=0
+PRETEND=1
+TERSE=0
+KEEPTEMP=0
 
 # Get cfg file contents
-source "${FINACFG}"
+. "${FINACFG}" || die "Could not load config from $FINACFG"
 
 # Parse cmdline
 while test -n "$1"; do
@@ -89,6 +104,12 @@ while test -n "$1"; do
             ;;
         --keep|-k)
             KEEPTEMP=1
+            ;;
+        --load|-l)
+            PRETEND=0
+            ;;
+        --terse|-t)
+            TERSE=1
             ;;
         *)
             echo "Unknown option '$1'"
@@ -105,7 +126,7 @@ dprint "MODPROBE='$MODPROBE'"
 dprint "IPTRESTORE='$IPTRESTORE'"
 dprint "IPTSAVE='$IPTSAVE'"
 dprint ""
-dprint "Program mode: PRETEND=$PRETEND KEEPTEMP=$KEEPTEMP"
+dprint "Program mode: PRETEND=$PRETEND KEEPTEMP=$KEEPTEMP LOAD=$LOAD"
 
 # Now, lets get the rule files
 dprint "Searching rules in '${RULESDIR}'"
@@ -129,6 +150,12 @@ fi
     for RULEFILE in $RULEFILES; do
         echo "#Fina# BEGIN of file '$RULEFILE'"
         cat "$RULEFILE"
+        RETVAL=$?
+        if [[ $RETVAL != 0 ]]; then
+            eprint "Could not open '$RULEFILE' (Error code '$RETVAL')"
+            eprint "I have left all the files I generated in $TMPDIR"
+            exit -2
+        fi
         echo "#Fina# END of file '$RULEFILE'"
     done
     echo -n "#Fina# Generation complete on "
@@ -136,7 +163,11 @@ fi
 } > "$TMPDIR/rules.new"
 
 if [[ $PRETEND == 1 ]]; then
-    cat "$TMPDIR/rules.new"
+    if [[ $TERSE == 1 ]]; then
+        grep -Ev '(^$|^[[:space:]]*#)' -- "$TMPDIR/rules.new"
+    else
+        cat "$TMPDIR/rules.new"
+    fi
 else
     dprint "Loading rules from file $TMPDIR/rules.new"
     MESG=$(iptables-restore < "$TMPDIR/rules.new" 2>&1)
