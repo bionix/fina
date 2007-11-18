@@ -22,8 +22,9 @@ The Fina installable parts are as follows:
   in /etc/fina. If you absolutely can't stand that location, you can put
   it elsewhere, but you'll need to edit the Fina script to load the
   config file from this new location.
-- The directory with the example rules (rules.d/). This normally would
-  reside in /etc/fina, but the location can be configured in fina.cfg.
+- The directory with the example rules (example-rules.d/). This normally
+  would reside in /etc/fina/rules.d, but the location can be configured
+  in fina.cfg.
 
 What you do
 -----------
@@ -35,8 +36,8 @@ In a nutshell:
 - Create /etc/fina, making it readable/accessible to your tastes
 - Copy fina.cfg to /etc/fina AND CHECK IT. Make sure it configures Fina
   the way you want it
-- Copy rules.d and its contents to /etc/fina (or wherever you configured
-  the rules to be in fina.cfg).
+- Copy example-rules.d and its contents to /etc/fina/rules.d (or
+  wherever you configured the rules to be in fina.cfg).
 
 Finally, and MOST IMPORTANTLY: Edit the files in /etc/fina/rules.d to
 make sure Fina does what you want. Failing to do so can make your
