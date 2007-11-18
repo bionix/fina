@@ -41,7 +41,7 @@ function print_help() {
 }
 
 function print_version() {
-    echo "Fina v$VERSION"
+    echo "Fina version $VERSION"
     echo "(C) 2007 Tobias Klausmann." 
     echo "This is free software"  
     echo "You may redistribute copies of it under the terms of the GNU GPLv2"
