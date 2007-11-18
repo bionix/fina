@@ -1,0 +1,15 @@
+# This file is for policy-independent early rules
+
+# The loopback interface is safe 
+-A OUTPUT -o lo -j ACCEPT 
+-A INPUT -i lo -j ACCEPT 
+
+# It is quite stupid to blindly drop all ICMP traffic.
+# I personally want it *all* to work:
+-A INPUT -p icmp -j ACCEPT 
+-A OUTPUT -p icmp -j ACCEPT 
+-A FORWARD -p icmp -j ACCEPT 
+
+# Some like to only allow specific ICMP messages
+# <insert rules here>
+

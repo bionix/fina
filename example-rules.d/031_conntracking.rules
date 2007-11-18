@@ -1,0 +1,13 @@
+# If we use conntracking with NAT, we usually will want to blanket-allow all established connections
+
+# This allows RELATED connections, for example FTP DATA connections and IRC DCC
+# connections.
+#-A INPUT -m state --state RELATED -j ACCEPT 
+#-A OUTPUT -m state --state RELATED -j ACCEPT 
+#-A FORWARD -m state --state RELATED -j ACCEPT 
+
+# This only allows ESTABLISHED connections.
+#-A INPUT -m state --state ESTABLISHED -j ACCEPT 
+#-A OUTPUT -m state --state ESTABLISHED -j ACCEPT 
+#-A FORWARD -m state --state ESTABLISHED -j ACCEPT 
+

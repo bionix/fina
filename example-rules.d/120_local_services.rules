@@ -1,0 +1,7 @@
+# This file contains rules that allow local services, i.e. services the
+# gateway/firewall/router itself provides.
+
+# Ident from everywhere (some mail servers are less grumpy if you answer this)
+# Tune the 0/0 if you only want this for some servers (e.g. those of your
+# provider)
+#-A INPUT -s 0/0 -i ppp0 -p tcp -m tcp --dport 113 -j ACCEPT 

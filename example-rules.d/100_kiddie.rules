@@ -1,0 +1,39 @@
+# Set up a chain that drops all the kiddie stuff like most P2P nets,
+# common exploit ports and the like.
+
+# First, explain that we need a dedicated chain
+
+#:kiddie - [0:0]
+
+# Here are the rules
+## Windows stuff 
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 135:139 -j DROP 
+#-A kiddie -i ppp0 -p udp -m udp --dport 135:139 -j DROP 
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 445 -j DROP 
+## Kazaa/Morpheus/iMesh/Grokster
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 1214 -j DROP 
+## MS SQL server
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 1433 -j DROP 
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 1434 -j DROP 
+## myDoom/Novarg
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 3127 -j DROP 
+## eDonkey
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 4663 -j DROP 
+## emule
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 4742 -j DROP 
+## UPnP
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 5000 -j DROP 
+## Napster
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 6699 -j DROP 
+## Gnutella
+#-A kiddie -i ppp0 -p tcp -m tcp --dport 6346 -j DROP 
+## Go back to INPUT chain
+#-A kiddie -j RETURN 
+
+# Finally, add a reference to the input and forward chains so our chain gets
+# used
+
+#-A INPUT -j kiddie 
+#-A FORWARD -j kiddie 
+
+

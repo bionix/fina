@@ -1,0 +1,14 @@
+# A file to set up custom/temporary/ad-hoc rejects
+
+# Make the chain
+:custom - [0:0]
+
+# Rules here
+
+# Go back whence you came
+-A custom -j RETURN
+
+# Uncomment one of the following to actually *use* the custom stuff
+# -A INPUT -j custom
+# -A OUTPUT -j custom
+# -A FORWARD -j custom

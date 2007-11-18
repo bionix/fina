@@ -1,0 +1,23 @@
+# Rules that drop invalid TCP packets (packets with invalid headers or other
+# brokenness)
+
+# Make table
+:tcpcheck - [0:0]
+
+# Rules
+-A tcpcheck -p tcp -m state --state INVALID -j DROP 
+-A tcpcheck -p tcp -m tcp --tcp-option 64 -j DROP 
+-A tcpcheck -p tcp -m tcp --tcp-option 128 -j DROP 
+-A tcpcheck -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,PSH,URG -j DROP 
+-A tcpcheck -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,RST,ACK,URG -j DROP 
+-A tcpcheck -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,RST,PSH,ACK,URG -j DROP 
+-A tcpcheck -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP 
+-A tcpcheck -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP 
+-A tcpcheck -p tcp -m tcp --tcp-flags FIN,SYN FIN,SYN -j DROP 
+# And go back whence you came
+-A tcpcheck -j RETURN 
+
+# Refernce to chains
+-A INPUT -j tcpcheck
+-A FORWARD -j tcpcheck
+

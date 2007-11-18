@@ -1,0 +1,36 @@
+# Rules for the nets from RFC1918 (10/8, 172.16/12 and 192.168/16)
+
+# Make chain
+:rfc1918 - [0:0]
+
+# We simply want to drop all RFC1918 stuff on our outside interface. We might
+# have any or all of the nets on our internal interface, sow e drop only on
+# ppp0. We use DROP since there's no way we can reliably answer anyone that
+# thinks those nets are publicly routed.
+-A rfc1918 -s 192.168.0.0/255.255.0.0 -i ppp0 -j DROP 
+-A rfc1918 -d 192.168.0.0/255.255.0.0 -i ppp0 -j DROP 
+-A rfc1918 -s 10.0.0.0/255.0.0.0 -i ppp0 -j DROP 
+-A rfc1918 -d 10.0.0.0/255.0.0.0 -i ppp0 -j DROP 
+-A rfc1918 -s 172.16.0.0/255.240.0.0 -i ppp0 -j DROP 
+-A rfc1918 -d 172.16.0.0/255.240.0.0 -i ppp0 -j DROP 
+# We don't want to send such packets on ppp0, either, so we reject them. We
+# have to be careful though: since we NAT packets from our internal net
+# (172.16.0.0/24) in the *post*routing chain, we would reject them here as they
+# have not been dealt with yet. Hence the extra rules for that net. The
+# returning packets will be dealt with by the ESTABLISHED rule in the FORWARD
+# chain
+#-A rfc1918 -s 172.16.0.0/255.255.255.0 -o ppp0 -j RETURN
+
+# Drop everything else, including the rest of 172.16.0.0/12
+-A rfc1918 -s 192.168.0.0/255.255.0.0 -o ppp0 -j lrd
+-A rfc1918 -d 192.168.0.0/255.255.0.0 -o ppp0 -j lrd 
+-A rfc1918 -s 10.0.0.0/255.0.0.0 -o ppp0 -j lrd 
+-A rfc1918 -d 10.0.0.0/255.0.0.0 -o ppp0 -j lrd 
+-A rfc1918 -s 172.16.0.0/255.240.0.0 -o ppp0 -j lrd 
+-A rfc1918 -d 172.16.0.0/255.240.0.0 -o ppp0 -j lrd 
+
+# Add references
+-A FORWARD -j rfc1918
+-A INPUT -j rfc1918
+
+

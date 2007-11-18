@@ -1,0 +1,14 @@
+# Now we tell Netfilter to mask everything coming from the /24 and going to
+# ppp0. Note that we can't simply use -i eth0 as we don't know the interface
+# stuff came from when in the postrouting chain. Also, we might have both
+# masked and unmasked nets on eth0, so we explicitly name the one(s) we want
+# NATed.
+
+# The policies are "ACCEPT" since policy-based rejects should happen in the
+# filter table (at least with our setup
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+

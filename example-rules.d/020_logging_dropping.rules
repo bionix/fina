@@ -1,0 +1,20 @@
+# Two chains that do rate-limited logging, rejecting then dropping (first
+# chain) or simply rejecting, then dropping)
+
+# Make chains
+:lrd - [0:0]
+:rd - [0:0]
+
+# Rules
+# Log, then reject. If rate limit is passed, simply drop.
+-A lrd -j ULOG --ulog-prefix "REJECT " 
+-A lrd -p tcp -m limit --limit 10/sec -j REJECT --reject-with tcp-reset 
+-A lrd -p udp -m limit --limit 10/sec -j REJECT --reject-with icmp-port-unreachable 
+-A lrd -j DROP 
+# Reject. If rate limit is passed, simply drop.
+-A rd -p tcp -m limit --limit 10/sec -j REJECT --reject-with tcp-reset 
+-A rd -p udp -m limit --limit 10/sec -j REJECT --reject-with icmp-port-unreachable 
+-A rd -j DROP 
+# No return rules, of course
+
+# Reference are used elsewhere.

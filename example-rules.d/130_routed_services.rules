@@ -1,0 +1,14 @@
+# This file contains all services that are actively allowed or denied for
+# machines on either side of the gateway
+
+# You can use this file two ways: allow everything at the bottom and then
+# specifically deny services you don't want, which is the way I've set it up.
+# Alternatively, you can allow select stuff at the top, denying everyhting else
+# at the bottom with a blanket rule jumping to rd or lrd
+
+# Do not allow IRC from the inside net
+-A FORWARD -i eth0 -o ppp0 -p tcp -m tcp --dport 6667 -j rd 
+
+# Allow everything else
+-A FORWARD -i eth0 -o ppp0 -j ACCEPT 
+
