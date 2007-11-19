@@ -142,6 +142,19 @@ dprint "IPTSAVE='$IPTSAVE'"
 dprint ""
 dprint "Program mode: PRETEND=$PRETEND KEEPTEMP=$KEEPTEMP LOAD=$LOAD"
 
+# First, load the modules
+dprint "Trying to load modules specified in '$AUTOMODS'"
+MODULES=$(grep -Ev '(^$|^[[:space:]]*#)' -- "$AUTOMODS" 2>/dev/null)
+dprint "Module list: \n$MODULES"
+for MODULE in $MODULES; do
+    if [[ $PRETEND != 1 ]]; then
+        # We let stderr/stdout of the modprobe get to the user
+        modprobe $MODULE || die "Loading of $MODULE failed, exiting"
+    else 
+        echo "#Fina# Would execute: modprobe $MODULE" >&2
+    fi
+done
+
 # Now, lets get the rule files
 dprint "Searching rules in '${RULESDIR}'"
 RULEFILES=$(get_rule_files)
@@ -150,8 +163,8 @@ dprint "Found:\n$RULEFILES"
 # Get a tmpfile to put assembled rules in
 TMPDIR=$(get_tmpdir)
 
-# Save the old rules if we're not pretending
-if [[ $PRETEND != 1 ]]; then
+# Save the old rules if we're not pretending -or- if we're told to keep stuff
+if [[ $PRETEND != 1 || $KEEPTEMP == 1 ]]; then
     $IPTSAVE > $TMPDIR/rules.old
 fi
 

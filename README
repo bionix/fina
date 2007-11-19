@@ -86,8 +86,7 @@ location specified in /etc/fina/fina.cfg. Then, Fina will try to load
 the generated file using iptables-restore. If this fails for whatever
 reason, it will try to load the old rule set and exhibit an appropriate
 error message plus whatever message it got from the failing
-iptables-restore command. Fina can also be configured to keep a history
-of old rule sets.
+iptables-restore command. 
 
 Dependencies
 ------------
@@ -107,12 +106,12 @@ Other functionality
 -------------------
 
 In addition to generating and then directly loading a rule set, Fina can
-also simply dump the file it would load to stdout ("pretend mode"). This
-is useful if you suspect a bug in your Netfilter snippets and want to
-take a look at the set before trying to load it. Fina adds a plethora of
-comments to the generated file to make debugging easier. Using Finas
-pretend mode, you can also ensure that Fina can read all the files it
-should.
+also simply dump the file it would load to stdout ("pretend mode", which
+is the default). This is useful if you suspect a bug in your Netfilter
+snippets and want to take a look at the set before trying to load it.
+Fina adds a plethora of comments to the generated file to make debugging
+easier. Using Finas pretend mode, you can also ensure that Fina can read
+all the files it should.
 
 Also, this way you can create diffs between your currently running rules
 and the rules Fina would generate. This way, you can easily spot if the
@@ -151,4 +150,4 @@ should contain a file called COPYING that contains the license.
 
 
 
-
+# vim:tw=72

@@ -46,3 +46,25 @@ system unreachable or open to attack.
 Also it is HIGHLY RECOMMENDED to run fina.sh with -p during initial
 configuration. This way you can check if Fina does what you mean it to.
 
+Example files
+-------------
+
+Fina comes with a fairly complete set of example rules files. Note that
+the organization of these files is - beyond the necessities of the order
+of the rules - completely arbitrary. If you'd rather keep your rules in
+one file or files prefixed with prime numbers only, go ahead. If you
+usually edited your single iptables-save dump by hand but now want Finas
+try-to-load-go-back-on-failure functionality, simply dump your current
+rules into one file in rules.d and be done.
+
+One thing to keep in mind when organizing rules into multiple files is
+that of course order matters in iptables. Sometimes it can be hard to
+keep rules that are thematically related in one file without breaking
+the order in which the should be executed. One way of handling this is
+to split them into two files with similar names. You can even go so far
+as using the lower digits of the prefixes to order the files. 
+
+All that said, you can do whatever you please when naming the files.
+Just don't use spaces, that would be a Bad Idea.
+
+# vim: tw=72
