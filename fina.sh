@@ -144,7 +144,7 @@ dprint "Program mode: PRETEND=$PRETEND KEEPTEMP=$KEEPTEMP LOAD=$LOAD"
 
 # First, load the modules
 dprint "Trying to load modules specified in '$AUTOMODS'"
-MODULES=$(grep -Ev '(^$|^[[:space:]]*#)' -- "$AUTOMODS" 2>/dev/null)
+MODULES=$(sed -e 's/#.*//g' "$AUTOMODS" 2>/dev/null| grep -Ev '(^[[:space:]]*$)')
 dprint "Module list: \n$MODULES"
 for MODULE in $MODULES; do
     if [[ $PRETEND != 1 ]]; then
@@ -176,7 +176,10 @@ fi
     echo 
     for RULEFILE in $RULEFILES; do
         echo "#Fina# BEGIN of file '$RULEFILE'"
-        cat "$RULEFILE"
+        # Comments only work if there is *nothing* before the #, so
+        # we remove all trailing comments (first expression) and remove
+        # all whitespace-sequences before comment line (second expression)
+        sed -re 's/([^	 ]+)[	 ]*#.*/\1/g' -e 's/^[   ]*#/#/g' "$RULEFILE"
         RETVAL=$?
         if [[ $RETVAL != 0 ]]; then
             eprint "Could not open '$RULEFILE' (Error code '$RETVAL')"
