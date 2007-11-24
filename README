@@ -1,7 +1,7 @@
 Fina
 ====
 
-The Netfilter script for the admin that knows what he's doing.
+The Netfilter script for admins who know what they're doing.
 
 This file describes how Fina works and why it does it the way it does.
 If you need a quick start in setting up Fina, look at the file INSTALL
@@ -93,14 +93,22 @@ Dependencies
 
 As mentioned above, Fina is designed to be lightweigth both in its own
 design as in its dependencies. As such, it was written as a bash script.
-The choice of bash (vs. Bourne or Korn Shell) is its ubiquity on Linux
-systems (and Netfilter is pretty much exclusive to Linux systems). On
-top of bash (version 2 or higher), Fina uses GNU find to traverse its
-configuration directory. Other versions of find will usually work, but
-if they don't the find call(s) in Finas source can probably be adjusted
-accordingly. If Fina is used to load Netfilter modules, it will of
-course the modutils/module-init-tools for the kernel it's used with.
-Finally (and obviously), Fina needs iptables-save and iptables-restore.
+The choice of bash (vs. Bourne or Korn Shell) is founded in its ubiquity
+on Linux systems (and Netfilter is pretty much exclusive to Linux
+systems). On top of bash (version 2 or higher), Fina uses GNU find to
+traverse its configuration directory. Other versions of find will
+usually work, but if they don't the find call(s) in Finas source can
+probably be adjusted accordingly. If Fina is used to load Netfilter
+modules, it will of course the modutils/module-init-tools for the kernel
+it's used with. On top of that, fina uses GNU sed and GNU grep. Finally
+(and obviously), Fina needs iptables-save and iptables-restore.
+
+So, to summarize:
+GNU bash (>=v2)
+GNU find (anything recent)
+GNU grep (ditto)
+GNU sed (ditto)
+iptables (whatever works with yout kernel)
 
 Other functionality
 -------------------
