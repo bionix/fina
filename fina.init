@@ -1,0 +1,46 @@
+#! /bin/sh
+# /etc/init.d/fina
+#
+# Written by Tobias Klausmann klausman-fina at schwarzvogel.de
+
+set -e
+
+DAEMON="/usr/sbin/fina4"
+NAME="fina"
+
+# this is from madduck on IRC, 2006-07-06
+# There should be a better possibility to give daemon error messages
+# and/or to log things
+
+start_fina()
+{
+  fina.sh && echo fina 
+}
+
+stop_fina()
+{
+  echo "There is no stop action for fina because there is no clear" >&2
+  echo "and simple way to discern what the user means by 'stop'" >&2
+}
+
+case "$1" in
+  start)
+    echo -n "Starting fina: "
+    start_fina
+    ;;
+  stop)
+    stop_fina
+    exit 1
+    ;;
+  restart)
+    echo -n "Restarting fina: "
+    start_fina
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit 0
+# vim:tabstop=2:expandtab:shiftwidth=2
