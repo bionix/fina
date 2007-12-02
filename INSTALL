@@ -14,8 +14,9 @@ What you get
 The Fina installable parts are as follows:
 
 - The Fina script itself (fina.sh). This usually goes to a place
-  reachable early in the boot process, /sbin for example.
-- The Fina initscript. This usually goes to /etc/init.d for "classic"
+  reachable early in the boot process, /sbin is a good idea since it's
+  also what the initscripts use.
+- The Fina initscripts. This usually goes to /etc/init.d for "classic"
   distributions (fina.init). There is also a Gentoo-specific init script
   (fina.init.gentoo) because initscripts work differently on Gentoo.
 - The default configuration file (fina.cfg). This file should be placed
@@ -32,18 +33,19 @@ What you do
 In a nutshell:
 - Copy fina.sh to /sbin and make sure it's executable
 - Copy fina.init (or fina.init.gentoo) to /etc/init.d, make sure it's
-  executable.
+  executable. Also add the startup links - this is specific for your
+  distribution. Gentoo uses rc-update, Debian uses update-rc.d.
 - Create /etc/fina, making it readable/accessible to your tastes
 - Copy fina.cfg to /etc/fina AND CHECK IT. Make sure it configures Fina
-  the way you want it
-- Copy example-rules.d and its contents to /etc/fina/rules.d (or
-  wherever you configured the rules to be in fina.cfg).
+  the way you want it.
+- Copy rules.d and its contents to /etc/fina/rules.d (or wherever you
+  configured the rules to be in fina.cfg). 
 
 Finally, and MOST IMPORTANTLY: Edit the files in /etc/fina/rules.d to
 make sure Fina does what you want. Failing to do so can make your
 system unreachable or open to attack. 
 
-Also it is HIGHLY RECOMMENDED to run fina.sh with -p during initial
+Also it is HIGHLY RECOMMENDED to run fina.sh without -l during initial
 configuration. This way you can check if Fina does what you mean it to.
 
 Example files
@@ -63,6 +65,14 @@ keep rules that are thematically related in one file without breaking
 the order in which the should be executed. One way of handling this is
 to split them into two files with similar names. You can even go so far
 as using the lower digits of the prefixes to order the files. 
+
+Another common setup is to prefix the rule file names with the table
+that they refer to. E.g. you'd have filter-000 to -999 and nat-000 to
+-999. The order of the *table* loading, i.e. if filter is before nat or
+not doesn't matter. However, every table opener (e.g. *nat) needs to
+have a corresponding COMMIT. And averything between the two is part of
+the same table space. For more info, refer to the IPTables/Netfilter
+documentation.
 
 All that said, you can do whatever you please when naming the files.
 Just don't use spaces, that would be a Bad Idea.
