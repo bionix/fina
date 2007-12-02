@@ -11,3 +11,5 @@
 #-A OUTPUT -m state --state ESTABLISHED -j ACCEPT 
 #-A FORWARD -m state --state ESTABLISHED -j ACCEPT 
 
+
+# vim: ft=sh

@@ -12,3 +12,5 @@
 # -A INPUT -j custom
 # -A OUTPUT -j custom
 # -A FORWARD -j custom
+
+# vim: ft=sh

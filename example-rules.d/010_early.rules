@@ -13,3 +13,5 @@
 # Some like to only allow specific ICMP messages
 # <insert rules here>
 
+
+# vim: ft=sh

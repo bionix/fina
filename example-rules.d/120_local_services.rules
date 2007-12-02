@@ -5,3 +5,5 @@
 # Tune the 0/0 if you only want this for some servers (e.g. those of your
 # provider)
 #-A INPUT -s 0/0 -i ppp0 -p tcp -m tcp --dport 113 -j ACCEPT 
+
+# vim: ft=sh

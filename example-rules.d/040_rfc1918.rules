@@ -34,3 +34,5 @@
 -A INPUT -j rfc1918
 
 
+
+# vim: ft=sh

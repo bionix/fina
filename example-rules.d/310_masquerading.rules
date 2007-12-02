@@ -5,3 +5,5 @@
 # NATed.
 
 -A POSTROUTING -s 172.16.0.0/255.255.255.0 -o ppp0 -j MASQUERADE 
+
+# vim: ft=sh

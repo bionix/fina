@@ -12,3 +12,5 @@
 # Allow everything else
 -A FORWARD -i eth0 -o ppp0 -j ACCEPT 
 
+
+# vim: ft=sh

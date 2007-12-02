@@ -21,3 +21,5 @@
 -A INPUT -j tcpcheck
 -A FORWARD -j tcpcheck
 
+
+# vim: ft=sh

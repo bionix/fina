@@ -18,3 +18,5 @@
 # No return rules, of course
 
 # Reference are used elsewhere.
+
+# vim: ft=sh

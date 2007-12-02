@@ -43,7 +43,8 @@ In a nutshell:
 
 Finally, and MOST IMPORTANTLY: Edit the files in /etc/fina/rules.d to
 make sure Fina does what you want. Failing to do so can make your
-system unreachable or open to attack. 
+system unreachable or open to attack. The rules in example-rules.d are
+just that, examples. They WON'T WORK FOR YOU.
 
 Also it is HIGHLY RECOMMENDED to run fina.sh without -l during initial
 configuration. This way you can check if Fina does what you mean it to.
