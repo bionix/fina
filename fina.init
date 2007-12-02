@@ -3,7 +3,7 @@
 #
 # Written by Tobias Klausmann klausman-fina at schwarzvogel.de
 
-DAEMON="/usr/sbin/fina4"
+DAEMON="/sbin/fina.sh"
 NAME="fina"
 
 # this is from madduck on IRC, 2006-07-06
@@ -29,7 +29,7 @@ load_minimal() {
 start_fina()
 {
   echo -n "Loading full ruleset..."
-  MSG=$(fina.sh -l 2>&1)
+  MSG=$("$DAEMON" -l 2>&1)
   RETVAL=$?
   if [[ $RETVAL != 0 ]]; then
     echo "failed ($MSG)" >&2
