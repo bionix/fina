@@ -1,6 +1,0 @@
-# This file contains all modules (one per line) that Fina should load
-# before trying to load the packet filter rules. The order in this file
-# will be preserved and modules will be loaded using modprobe
-#
-# Conntracking for FTP connections
-# nf_conntrack_ftp
