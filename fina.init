@@ -3,8 +3,6 @@
 #
 # Written by Tobias Klausmann klausman-fina at schwarzvogel.de
 
-set -e
-
 DAEMON="/usr/sbin/fina4"
 NAME="fina"
 
@@ -12,9 +10,32 @@ NAME="fina"
 # There should be a better possibility to give daemon error messages
 # and/or to log things
 
+load_minimal() {
+  # First, try to load the minimal rule set, so we have a base line we can go
+  # back to if loading of the actual rule file fails
+  if [[ -r /etc/fina/minimal.rules ]]; then
+    echo -n 'Trying to load minimal rule set...'
+    # if this fails, theres nothing we can do except print an errmsg
+    MSG=$(iptables-restore < /etc/fina/minimal.rules 2>&1)
+    RETVAL=$?
+    if [[ $RETVAL != 0 ]]; then
+      echo "failed ($MSG)" >&2
+    else
+      echo "ok"
+    fi
+  fi
+}
+
 start_fina()
 {
-  fina.sh && echo fina 
+  echo -n "Loading full ruleset..."
+  MSG=$(fina.sh -l 2>&1)
+  RETVAL=$?
+  if [[ $RETVAL != 0 ]]; then
+    echo "failed ($MSG)" >&2
+  else
+    echo "ok"
+  fi
 }
 
 stop_fina()
@@ -25,7 +46,8 @@ stop_fina()
 
 case "$1" in
   start)
-    echo -n "Starting fina: "
+    echo "Starting fina: "
+    load_minimal
     start_fina
     ;;
   stop)

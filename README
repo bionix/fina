@@ -29,6 +29,14 @@ NAT and prerouting magic needs are, the script must be able to handle
 it. One side effect of this is, that it must handle huge filter sets at
 least as easily as Netfilter itself.
 
+The fourth requirement is a bit complicated. Sometimes, it may be
+necessary to change variables in /proc after modules have been loaded
+but before rules referring to those modules are added. Also, sometimes
+it might be necessary, to do stuff after the packetfilter has been
+loaded. To this end, /etc/fina may contain two scripts called
+"pre-up.sh" and "post-up.sh". If those files exist and are executable,
+they are executed at the corresponding times.
+
 Finally, the script should be lightweight, having as few external
 dependencies as possible. Also, the script itself should be as simple
 and small as possible. This is because simple things have fewer ways in
@@ -62,15 +70,21 @@ guessed.
 How it works
 ------------
 
+If fina is started via the init script, one critical extra step is
+taken: the script tries to load /etc/fina/minimal.rules with
+iptables-restore. This comes in handy if you've updated the kernel and
+forgotten parts of the iptables modules - your nice big config file
+probably won't load and your machine is either vulnerable or
+inaccessible to you. Usually, you'll want to have a very simple rule set
+in here (without conntracking) that allows access from your management
+IPs.
+
 Fina expects one configuration file, /etc/fina/fina.cfg. This is
 actually simply a shell script that is sourced from the main Fina
-script. It contains (by default) variables that specify at least two
-additional locations. First, a file that contains a list of kernel
-modules that should be loaded before the rule set is loaded. This is
-mainly for the boot phase. Actually, the necessary Netfilter rules
-should be configured in the distribution's startup script, but this file
-is for those distributions where no such file exists or it is unusable
-for other reasons.
+script. It contains (by default) one variable that specify one 
+additional location, that of the rule directory. First, fina checks if
+/etc/fina/pre-up.sh exists and is executable and if so runs it. This is
+the place to load modules or change stuff in proc if the need arises.
 
 The second location is more important. It specifies the directory which
 contains the rule snippets that Fina should assemble. Usually, this is
