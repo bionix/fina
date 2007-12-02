@@ -6,66 +6,44 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-DAEMON="/usr/sbin/fina4"
-NAME="fina"
-
-# this is from madduck on IRC, 2006-07-06
-# There should be a better possibility to give daemon error messages
-# and/or to log things
+depend() {
+  before net
+  use logger
+  }
 
 load_minimal() {
-  # First, try to load the minimal rule set, so we have a base line we can go
-  # back to if loading of the actual rule file fails
+  # Try to load the minimal rule set, so we have a base line we can go
+  # back to if loading of the actual rule file fails during boot
   if [[ -r /etc/fina/minimal.rules ]]; then
-    echo -n 'Trying to load minimal rule set...'
-    # if this fails, theres nothing we can do except print an errmsg
-    MSG=$(iptables-restore < /etc/fina/minimal.rules 2>&1)
-    RETVAL=$?
-    if [[ $RETVAL != 0 ]]; then
-      echo "failed ($MSG)" >&2
-    else
-      echo "ok"
-    fi
+    ebegin 'Trying to load minimal rule set'
+    # if this fails, there's nothing we can do except print an errmsg
+    iptables-restore < /etc/fina/minimal.rules 
+    eend $?
   fi
 }
 
 start_fina()
 {
-  echo -n "Loading full ruleset..."
-  MSG=$(fina.sh -l 2>&1)
-  RETVAL=$?
-  if [[ $RETVAL != 0 ]]; then
-    echo "failed ($MSG)" >&2
-  else
-    echo "ok"
-  fi
+  ebegin "Loading full ruleset..."
+  fina.sh -l 
+  eend $?
 }
 
-stop_fina()
-{
-  echo "There is no stop action for fina because there is no clear" >&2
-  echo "and simple way to discern what the user means by 'stop'" >&2
+start() {
+  load_minimal
+  start_fina
 }
 
-case "$1" in
-  start)
-    echo "Starting fina: "
-    load_minimal
-    start_fina
-    ;;
-  stop)
-    stop_fina
-    exit 1
-    ;;
-  restart)
-    echo -n "Restarting fina: "
-    start_fina
-    ;;
-  *)
-    echo "Usage: $0 {start|stop|restart}"
-    exit 1
-    ;;
-esac
+restart() {
+  start_fina
+}
 
-exit 0
-# vim:tabstop=2:expandtab:shiftwidth=2
+stop() {
+  eerror "There is no stop action for fina because there is no clear" 
+  eerror "and simple way to discern what the user means by 'stop'" 
+}
+
+minmal() {
+   load_minimal
+}
+
