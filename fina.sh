@@ -18,7 +18,7 @@ IPTSAVE=$(which iptables-save)
 # --------------- Nothing to configure below here --------------- #
 
 PROGNAME="$0"
-VERSION="0.1.1"
+VERSION="0.1.2"
 DEBUG="0"
 
 # Help function
