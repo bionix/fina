@@ -38,6 +38,18 @@ start_fina()
   fi
 }
 
+load_minimal()
+{
+  echo -n "Loading minimal ruleset..."
+  MSG=$("$DAEMON" -m 2>&1)
+  RETVAL=$?
+  if [[ $RETVAL != 0 ]]; then
+    echo "failed ($MSG)" >&2
+  else
+    echo "ok"
+  fi
+}
+
 stop_fina()
 {
   echo "There is no stop action for fina because there is no clear" >&2
@@ -52,11 +64,15 @@ case "$1" in
     ;;
   stop)
     stop_fina
-    exit 1
+    exit 0
     ;;
   restart)
     echo -n "Restarting fina: "
     start_fina
+    ;;
+  minimal)
+    echo -n "Loading minimal ruleset: "
+    load_minimal
     ;;
   *)
     echo "Usage: $0 {start|stop|restart}"
