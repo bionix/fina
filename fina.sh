@@ -18,8 +18,8 @@ IPTSAVE=$(which iptables-save)
 # --------------- Nothing to configure below here --------------- #
 
 PROGNAME="$0"
-VERSION="0.1.2"
-DEBUG="0"
+VERSION="0.1.3"
+DEBUG="1"
 
 # Help function
 function print_help() {
@@ -31,6 +31,7 @@ function print_help() {
     echo "   -v, --version    Output script version, then exit."
     echo "   -p, --pretend    Don't load rules, just print them to stdout. (default)" 
     echo "   -l, --load       Create rules and load them" 
+    echo "   -m, --minimal    Load minimal ruleset (implies -l)"
     echo "   -t, --terse      Remove all comments and empty lines from output when in"
     echo "                    'pretend' mode"
     echo "   -k, --keep       Keep files generated in /tmp"
@@ -98,6 +99,8 @@ function get_tmpdir () {
 PRETEND=1
 TERSE=0
 KEEPTEMP=0
+LOAD=0
+MINIMAL=0
 
 # Get cfg file contents
 . "${FINACFG}" || die "Could not load config from $FINACFG"
@@ -125,6 +128,9 @@ while test -n "$1"; do
         --terse|-t)
             TERSE=1
             ;;
+        --minimal|-m)
+            MINIMAL=1
+            ;;
         *)
             echo "Unknown option '$1'"
             print_help
@@ -140,20 +146,29 @@ dprint "MODPROBE='$MODPROBE'"
 dprint "IPTRESTORE='$IPTRESTORE'"
 dprint "IPTSAVE='$IPTSAVE'"
 dprint ""
-dprint "Program mode: PRETEND=$PRETEND KEEPTEMP=$KEEPTEMP LOAD=$LOAD"
+dprint "Program mode: PRETEND=$PRETEND KEEPTEMP=$KEEPTEMP LOAD=$LOAD MINIMAL=$MINIMAL"
 
-# First, load the modules
-dprint "Trying to load modules specified in '$AUTOMODS'"
-MODULES=$(sed -e 's/#.*//g' "$AUTOMODS" 2>/dev/null| grep -Ev '(^[[:space:]]*$)')
-dprint "Module list: \n$MODULES"
-for MODULE in $MODULES; do
-    if [[ $PRETEND != 1 ]]; then
-        # We let stderr/stdout of the modprobe get to the user
-        modprobe $MODULE || die "Loading of $MODULE failed, exiting"
-    else 
-        echo "#Fina# Would execute: modprobe $MODULE" >&2
+# If we are asked to load the minimal ruleset, things are rather simple
+if [[ $MINIMAL == 1 ]]; then
+    if [[ -r /etc/fina/minimal.rules ]]; then
+        echo -n 'Trying to load minimal rule set...'
+        # if this fails, theres nothing we can do except print an errmsg
+        MSG=$(iptables-restore < /etc/fina/minimal.rules 2>&1)
+        RETVAL=$?
+        if [[ $RETVAL != 0 ]]; then
+            echo "failed ($MSG)" >&2
+            exit $RETVAL
+        else
+            echo "ok"
+            exit 0
+        fi
     fi
-done
+fi
+
+# First, execute pre-load.sh
+if [[ -x /etc/fina/pre-load.sh ]]; then
+    /etc/fina/pre-load.sh
+fi
 
 # Now, lets get the rule files
 dprint "Searching rules in '${RULESDIR}'"
@@ -219,6 +234,11 @@ fi
 
 if [[ $KEEPTEMP != 1 ]]; then
     rm -rf $TMPDIR
+fi
+
+# Finally, execute post-load.sh
+if [[ -x /etc/fina/post-load.sh ]]; then
+    /etc/fina/post-load.sh
 fi
 
 # vim: tabstop=4:shiftwidth=4:smarttab:expandtab:softtabstop=4:smartindent
