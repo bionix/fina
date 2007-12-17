@@ -77,7 +77,8 @@ forgotten parts of the iptables modules - your nice big config file
 probably won't load and your machine is either vulnerable or
 inaccessible to you. Usually, you'll want to have a very simple rule set
 in here (without conntracking) that allows access from your management
-IPs.
+IPs. You can load this ruleset using the -m commandline switch. This can
+be handy in emergency situations (think of it as a PANIC button).
 
 Fina expects one configuration file, /etc/fina/fina.cfg. This is
 actually simply a shell script that is sourced from the main Fina
@@ -101,6 +102,9 @@ the generated file using iptables-restore. If this fails for whatever
 reason, it will try to load the old rule set and exhibit an appropriate
 error message plus whatever message it got from the failing
 iptables-restore command. 
+
+Finally, fina will execute /etc/fina/post-up.sh if it exists and is
+executable.
 
 Dependencies
 ------------

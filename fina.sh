@@ -165,9 +165,9 @@ if [[ $MINIMAL == 1 ]]; then
     fi
 fi
 
-# First, execute pre-load.sh
-if [[ -x /etc/fina/pre-load.sh ]]; then
-    /etc/fina/pre-load.sh
+# First, execute pre-up.sh
+if [[ -x /etc/fina/pre-up.sh ]]; then
+    /etc/fina/pre-up.sh
 fi
 
 # Now, lets get the rule files
@@ -236,9 +236,9 @@ if [[ $KEEPTEMP != 1 ]]; then
     rm -rf $TMPDIR
 fi
 
-# Finally, execute post-load.sh
-if [[ -x /etc/fina/post-load.sh ]]; then
-    /etc/fina/post-load.sh
+# Finally, execute post-up.sh
+if [[ -x /etc/fina/post-up.sh ]]; then
+    /etc/fina/post-up.sh
 fi
 
 # vim: tabstop=4:shiftwidth=4:smarttab:expandtab:softtabstop=4:smartindent
