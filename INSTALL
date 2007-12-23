@@ -15,36 +15,39 @@ The Fina installable parts are as follows:
 
 - The Fina script itself (fina.sh). This usually goes to a place
   reachable early in the boot process, /sbin is a good idea since it's
-  also what the initscripts use.
-- The Fina initscripts. This usually goes to /etc/init.d for "classic"
+  also what the init scripts use.
+- The Fina init scripts. This usually goes to /etc/init.d for "classic"
   distributions (fina.init). There is also a Gentoo-specific init script
-  (fina.init.gentoo) because initscripts work differently on Gentoo.
+  (fina.init.gentoo) because init scripts work differently on Gentoo.
 - The default configuration file (fina.cfg). This file should be placed
   in /etc/fina. If you absolutely can't stand that location, you can put
   it elsewhere, but you'll need to edit the Fina script to load the
   config file from this new location.
-- The directory with the example rules (example-rules.d/). This normally
-  would reside in /etc/fina/rules.d, but the location can be configured
-  in fina.cfg.
 
 What you do
 -----------
 
 In a nutshell:
-- Copy fina.sh to /sbin and make sure it's executable
-- Copy fina.init (or fina.init.gentoo) to /etc/init.d, make sure it's
+- Copy fina.sh to /sbin/ and make sure it's executable
+- Copy fina.init (or fina.init.gentoo) to /etc/init.d/, make sure it's
   executable. Also add the startup links - this is specific for your
   distribution. Gentoo uses rc-update, Debian uses update-rc.d.
-- Create /etc/fina, making it readable/accessible to your tastes
-- Copy fina.cfg to /etc/fina AND CHECK IT. Make sure it configures Fina
+- Create /etc/fina, making it readable/accessible to your tastes (0700
+  seems like a good idea)
+- Copy fina.cfg to /etc/fina/ AND CHECK IT. Make sure it configures Fina
   the way you want it.
-- Copy rules.d and its contents to /etc/fina/rules.d (or wherever you
-  configured the rules to be in fina.cfg). 
+- Create the directory /etc/fina/rules.d/ - be sure to take care of
+  proper permissions. 
+- Create the file /etc/fina/minimal.rules. It should contain the bare
+  necessities to make you host reachable, yet be secure. A good idea is
+  to only add the IP addresse(s) of your management machine(s). That
+  way, you also have a ruleset you can load in emergency situations
+  (using -m)
 
-Finally, and MOST IMPORTANTLY: Edit the files in /etc/fina/rules.d to
+Finally, and MOST IMPORTANTLY: Edit the files in /etc/fina/rules.d/ to
 make sure Fina does what you want. Failing to do so can make your
 system unreachable or open to attack. The rules in example-rules.d are
-just that, examples. They WON'T WORK FOR YOU.
+just that, examples. They WON'T WORK FOR YOU. Also, you can
 
 Also it is HIGHLY RECOMMENDED to run fina.sh without -l during initial
 configuration. This way you can check if Fina does what you mean it to.
@@ -58,23 +61,23 @@ of the rules - completely arbitrary. If you'd rather keep your rules in
 one file or files prefixed with prime numbers only, go ahead. If you
 usually edited your single iptables-save dump by hand but now want Finas
 try-to-load-go-back-on-failure functionality, simply dump your current
-rules into one file in rules.d and be done.
+rules into one file in rules.d and make a copy of a known good ruleset
+in minimal.rules.
 
 One thing to keep in mind when organizing rules into multiple files is
 that of course order matters in iptables. Sometimes it can be hard to
 keep rules that are thematically related in one file without breaking
-the order in which the should be executed. One way of handling this is
-to split them into two files with similar names. You can even go so far
-as using the lower digits of the prefixes to order the files. 
+the order in which they should be executed. One way of handling this is
+to split them into two files with similar names. You can also use the
+lower digits of the prefixes to order the files. 
 
 Another common setup is to prefix the rule file names with the table
 that they refer to. E.g. you'd have filter-000 to -999 and nat-000 to
--999. The order of the *table* loading, i.e. if filter is before nat or
-not doesn't matter. However, every table opener (e.g. *nat) needs to
-have a corresponding COMMIT. And averything between the two is part of
-the same table space. For more info, refer to the IPTables/Netfilter
+-999 (the example rules are structured this way). The order of the
+*table* loading, i.e. if filter is before nat or vice versa doesn't
+matter. However, every table opener (e.g. *nat) needs to have a
+corresponding COMMIT. And everything between the two is part of the same
+table space. For more info, refer to the IPTables/Netfilter
 documentation.
-
-All that said, you can do whatever you please when naming the files.
 
 # vim: tw=72

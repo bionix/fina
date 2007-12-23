@@ -32,7 +32,7 @@ least as easily as Netfilter itself.
 The fourth requirement is a bit complicated. Sometimes, it may be
 necessary to change variables in /proc after modules have been loaded
 but before rules referring to those modules are added. Also, sometimes
-it might be necessary, to do stuff after the packetfilter has been
+it might be necessary, to do stuff after the packet filter has been
 loaded. To this end, /etc/fina may contain two scripts called
 "pre-up.sh" and "post-up.sh". If those files exist and are executable,
 they are executed at the corresponding times.
@@ -109,7 +109,7 @@ executable.
 Dependencies
 ------------
 
-As mentioned above, Fina is designed to be lightweigth both in its own
+As mentioned above, Fina is designed to be lightweight both in its own
 design as in its dependencies. As such, it was written as a bash script.
 The choice of bash (vs. Bourne or Korn Shell) is founded in its ubiquity
 on Linux systems (and Netfilter is pretty much exclusive to Linux
@@ -126,7 +126,7 @@ GNU bash (>=v2)
 GNU find (anything recent)
 GNU grep (ditto)
 GNU sed (ditto)
-iptables (whatever works with yout kernel)
+iptables (whatever works with your kernel)
 
 Other functionality
 -------------------
