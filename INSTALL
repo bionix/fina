@@ -76,6 +76,5 @@ the same table space. For more info, refer to the IPTables/Netfilter
 documentation.
 
 All that said, you can do whatever you please when naming the files.
-Just don't use spaces, that would be a Bad Idea.
 
 # vim: tw=72
