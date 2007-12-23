@@ -6,10 +6,6 @@
 DAEMON="/sbin/fina.sh"
 NAME="fina"
 
-# this is from madduck on IRC, 2006-07-06
-# There should be a better possibility to give daemon error messages
-# and/or to log things
-
 load_minimal() {
   # First, try to load the minimal rule set, so we have a base line we can go
   # back to if loading of the actual rule file fails
