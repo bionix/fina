@@ -2,7 +2,7 @@
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
 .\" other parameters are allowed: see man(7), man(1)
-.TH FINA SECTION "February 26, 2008"
+.TH FINA 8 "February 26, 2008"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -16,44 +16,154 @@
 .\" .sp <n>    insert n+1 empty lines
 .\" for manpage-specific macros, see man(7)
 .SH NAME
-fina \- program to do something
+fina \- The Netfilter script for admins who know what they're doing.
 .SH SYNOPSIS
 .B fina
-.RI [ options ] " files" ...
+.RI [ options ] 
 .br
-.B bar
-.RI [ options ] " files" ...
-.SH DESCRIPTION
-This manual page documents briefly the
 .B fina
-and
-.B bar
-commands.
-.PP
-.\" TeX users may be more comfortable with the \fB<whatever>\fP and
-.\" \fI<whatever>\fP escape sequences to invode bold face and italics, 
-.\" respectively.
-\fBfina\fP is a program that...
+.RI  --help|-h
+.SH DESCRIPTION
+This manual page documents how \fBfina\fP works and why it does it the way it does.
+If you need a quick start in setting up \fBfina\fP, look at the file INSTALL
+that came with the package.
 .SH OPTIONS
-These programs follow the usual GNU command line syntax, with long
+\fBFina\fP follows follow the usual GNU command line syntax, with long
 options starting with two dashes (`-').
-A summary of options is included below.
-For a complete description, see the Info files.
 .TP
 .B \-h, \-\-help
 Show summary of options.
 .TP
 .B \-v, \-\-version
 Show version of program.
-.SH SEE ALSO
-.BR bar (1),
-.BR baz (1).
-.br
-The programs are documented fully by
-.IR "The Rise and Fall of a Fooish Bar" ,
-available via the Info system.
-.SH AUTHOR
-fina was written by <upstream author>.
+.TP
+.B \-p, \-\-pretend
+Don't load rules, just print them to stdout. (default)
+.TP
+.B \-l, \-\-load
+Create rules and load them (opposition to -p)
+.TP
+.B \-m, \-\-minimal
+Load minimal ruleset (implies -l)
+.TP
+.B \-t, \-\-terse
+Remove all comments and empty lines from output when in 'pretend' mode
+.TP
+.B \-k, \-\-keep
+Keep files generated in /tmp
 .PP
-This manual page was written by root <Alexander Gedak <packages@freenet-rz.de>>,
-for the Debian project (but may be used by others).
+The modes 
+.B -p 
+and 
+.B -l 
+are mutually exclusive, the last of those encountered
+on the command line is used.
+
+.SH DESIGN
+\fBFina\fP is the result of working with various attempts at wrapping iptables
+(rather: Netfilter) with scripts and other infrastructure in order to
+make daily administration of rules easier. 
+
+Many admins need a script that can easily be automated
+remotely. \fBFina\fP was designed with that goal in mind
+
+Another goal for \fBfina\fP  is that it has to be secure by
+default - without getting into the admins way too much. That is to say,
+\fBfina\fP only creates rules that the admin expressly configures. Of course, a
+sensible set of configuration 
+.I examples 
+is provided.
+
+The third hard requirement is that the script should be capable of doing
+everything Netfilter can. That means that no matter how complicated the
+NAT and prerouting magic is, the script must be able to handle
+it. One side effect of this is that it must handle huge filter sets at
+least as easily as Netfilter itself.
+
+The fourth requirement is a bit complicated. Sometimes, it may be
+necessary to change variables in /proc after modules have been loaded
+but before rules referring to those modules are added. Also, sometimes
+it might be necessary, to do stuff after the packet filter has been
+loaded. To this end, \fBfina\fP may be used to run two scripts called
+"pre-up.sh" and "post-up.sh". If those files exist and are executable,
+they are executed at the corresponding times.
+
+Finally, the script should be lightweight, having as few external
+dependencies as possible. Also, the script itself should be as simple
+and small as possible. This is because simple things have fewer ways in
+which they can fail.
+
+.SH OPERATION
+
+Due to the four hard requirements mentioned above, the script doesn't
+actually "know" all that much about Netfilter. This way, it easily
+incorporates everything Netfilter can do - without having a moving
+target of specs to adhere to.
+
+Basically, \fBfina\fP assembles an iptables-restore compatible rule dump from
+snippets configured/edited by the admin of the machine. It then tries to
+load the whole set. If this fails in any way, the old rule set is
+restored.
+
+Naturally, this means that \fBfina\fP does next to nothing for the admin
+when it comes to 
+.I generating
+rules on the machine. This is a conscious
+decision. For one, whoever uses/configures a packet filter should be
+aware of all the consequences of his actions. This includes for example
+knowing why it is bad to drop all ICMP traffic.
+
+Another reason is that providing examples or even recipes for packet
+filters is something 
+.I documentation
+should do. It's not a good idea to
+have a black box do "simply the right thing". Usually, there is a
+non-trivial amount of users for which The Right Thing can't be easily
+guessed.
+
+.SH STARTING AND STOPPING
+
+If \fBfina\fP is started via the init script, one critical extra step is
+taken: the script tries to load /etc/fina/minimal.rules with
+iptables-restore. This comes in handy if you've updated the kernel and
+forgotten parts of the iptables modules - your nice big config file
+probably won't load and your machine is either vulnerable or
+inaccessible to you. Usually, you'll want to have a very simple rule set
+in here (without conntracking) that allows access from your management
+IPs. You can load this ruleset using the -m commandline switch. This can
+be handy in emergency situations (think of it as a PANIC button).
+
+\fBFina\fP expects one configuration file, /etc/fina/fina.cfg. This is
+actually simply a shell script that is sourced from the main \fBfina\fP
+script. It contains (by default) one variable that specify one 
+additional location, that of the rule directory. First, \fBfina\fP checks if
+/etc/fina/pre-up.sh exists and is executable and if so runs it. This is
+the place to load modules or change stuff in proc if the need arises.
+
+The second location is more important. It specifies the directory which
+contains the rule snippets that \fBfina\fP should assemble. Usually, this is
+located at /etc/fina/rules.d/. \fBFina\fP then proceeds to load all files from
+said directory (and its sub-directories) that end in .rules. In order to
+have reliable order when assembling, the files are usually prefixed with
+two- or three-digit numbers. 
+
+The expected format of the files is of no concern to \fBfina\fP. \fBFina\fP itself
+will only assemble them in order into one file. After this, it will make
+a backup of the current rule set (using iptables-save) and put it in a
+location specified in /etc/fina/fina.cfg. Then, \fBfina\fP will try to load
+the generated file using iptables-restore. If this fails for whatever
+reason, it will try to load the old rule set and exhibit an appropriate
+error message plus whatever message it got from the failing
+iptables-restore command. 
+
+Finally, \fBfina\fP will execute /etc/fina/post-up.sh if it exists and is
+executable.
+
+.SH SEE ALSO
+.BR iptables (8), 
+.BR iptables-save (8).
+.BR iptables-restore (8).
+.SH AUTHOR
+\fBfina\fP (and this manpage) was written by Tobias Klausmann
+.PP
+This manual page is maintained by Alexander Gedak.
