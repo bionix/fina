@@ -25,7 +25,7 @@ load_minimal() {
 start_fina()
 {
   ebegin "Loading full ruleset..."
-  fina.sh -l 
+  fina -l 
   eend $?
 }
 

@@ -13,7 +13,7 @@ What you get
 
 The Fina installable parts are as follows:
 
-- The Fina script itself (fina.sh). This usually goes to a place
+- The Fina script itself (fina). This usually goes to a place
   reachable early in the boot process, /sbin is a good idea since it's
   also what the init scripts use.
 - The Fina init scripts. This usually goes to /etc/init.d for "classic"
@@ -28,7 +28,7 @@ What you do
 -----------
 
 In a nutshell:
-- Copy fina.sh to /sbin/ and make sure it's executable
+- Copy fina to /sbin/ and make sure it's executable
 - Copy fina.init (or fina.init.gentoo) to /etc/init.d/, make sure it's
   executable. Also add the startup links - this is specific for your
   distribution. Gentoo uses rc-update, Debian uses update-rc.d.
@@ -49,7 +49,7 @@ make sure Fina does what you want. Failing to do so can make your
 system unreachable or open to attack. The rules in example-rules.d are
 just that, examples. They WON'T WORK FOR YOU. Also, you can
 
-Also it is HIGHLY RECOMMENDED to run fina.sh without -l during initial
+Also it is HIGHLY RECOMMENDED to run fina without -l during initial
 configuration. This way you can check if Fina does what you mean it to.
 
 Example files

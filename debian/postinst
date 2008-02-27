@@ -5,6 +5,7 @@
 
 set -e
 
+
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
 #        * <old-postinst> `abort-upgrade' <new version>
@@ -20,6 +21,10 @@ set -e
 
 case "$1" in
     configure)
+    [ -f /etc/fina/fina.cfg ] || cp /var/lib/fina/fina.cfg /etc/fina/
+    [ -f /etc/default/fina ] || cp /var/lib/fina/fina-default /etc/default/fina
+    [ -f /etc/fina/post-up.sh ] || cp /var/lib/fina/post-up.sh /etc/fina/
+    [ -f /etc/fina/pre-up.sh ] || cp /var/lib/fina/pre-up.sh /etc/fina/
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

@@ -3,8 +3,18 @@
 #
 # Written by Tobias Klausmann klausman-fina at schwarzvogel.de
 
-DAEMON="/sbin/fina.sh"
+DAEMON="/sbin/fina"
 NAME="fina"
+
+# Load defaults if exists
+[ -r /etc/default/fina ] && . /etc/default/fina
+
+# Is fina disabled?
+case "$ENABLE_FINA" in
+  [Nn]*)
+        exit 0
+        ;;
+esac
 
 load_minimal() {
   # First, try to load the minimal rule set, so we have a base line we can go

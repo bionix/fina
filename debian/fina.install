@@ -1,0 +1,7 @@
+fina sbin
+fina.cfg var/lib/fina
+debian/fina-default var/lib/fina/
+example-rules.d/ var/lib/fina/
+pre-up.sh var/lib/fina/
+post-up.sh var/lib/fina/
+
