@@ -162,6 +162,8 @@ if [[ $MINIMAL == 1 ]]; then
             echo "ok"
             exit 0
         fi
+    else
+        echo "no minimal rule set found, skipping."
     fi
 fi
 
@@ -173,6 +175,10 @@ fi
 # Now, lets get the rule files
 dprint "Searching rules in '${RULESDIR}'"
 dprint "Found:\n$(get_rule_files)"
+
+if [[ $(get_rule_files) == "" ]]; then
+    die "No rules found, exiting. Your existing ruleset wasn't touched."
+fi
 
 # Get a tmpfile to put assembled rules in
 TMPDIR=$(get_tmpdir)
