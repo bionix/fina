@@ -1,0 +1,14 @@
+Source: fina
+Section: net
+Priority: extra
+Maintainer: Alexander Gedak <packages@freenet-rz.de>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: fina
+Architecture: all
+Depends: iptables
+Description: fina is an easy to use firewall for freenet AG
+ fina is originally written by tobias klausmann
+ with a little bit knowlegde of the format of iptables-save you are
+ able to configure fina easely.
