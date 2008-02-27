@@ -1,10 +1,16 @@
-fina (55) unstable; urgency=low
+fina (0.1.4-3) unstable; urgency=low
+
+  * 
+
+ -- root <root@debian.mk.freenet-rz.de>  Wed, 27 Feb 2008 15:27:14 +0100
+
+fina (0.1.4-2) unstable; urgency=low
 
   * Nearly complete 
 
  -- Alexander Gedak <packages@freenet-rz.de>  Wed, 27 Feb 2008 14:20:34 +0100
 
-fina  (53-1) unstable; urgency=low
+fina  (0.1.4-1)  unstable; urgency=low
 
   * Initial release
 
