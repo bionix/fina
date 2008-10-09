@@ -24,7 +24,7 @@ load_minimal() {
 
 start_fina()
 {
-  ebegin "Loading full ruleset..."
+  ebegin "Loading full ruleset"
   fina -l 
   eend $?
 }
@@ -39,8 +39,9 @@ restart() {
 }
 
 stop() {
-  eerror "There is no stop action for fina because there is no clear" 
-  eerror "and simple way to discern what the user means by 'stop'" 
+  ewarn "There is no stop action for fina because there is no clear" 
+  ewarn "and simple way to discern what the user means by 'stop'" 
+  exit 0
 }
 
 minmal() {
