@@ -2,8 +2,18 @@ Installation instructions for Fina
 ==================================
 
 These instructions are very basic, they DO NOT cover configuring Fina to
-do the things you want it to. They simply which of the files in the
-package go where. 
+do the things you want it to. They simply describe which of the files in
+the package go where. 
+
+Note that the IPv6 portion of fina is configure in an analog way to what
+is described here. The rules dir is named rules6.d, the script itself is
+called fina6, the init scripts have similarly changed names. Also, there
+are separate post/pre-up scripts (Hint: they have "6" in their names).
+As such, the description below just describes fina, fina6 is configured
+in a very similar way.
+
+The only common file between fina and fina6 is the default configuration
+file: /etc/fina/fina.cfg
 
 WARNING! If you simply copy all the files to their locations and run
 Fina, your system will be UNREACHABLE. You have been warned.

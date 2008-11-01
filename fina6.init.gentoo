@@ -1,5 +1,5 @@
 #!/sbin/runscript
-# /etc/init.d/fina
+# /etc/init.d/fina6
 #
 # Written by Tobias Klausmann klausman-fina at schwarzvogel.de
 # (C) 2007 Tobias Klausmann
@@ -8,7 +8,7 @@
 
 opts="start stop restart minimal"
 
-description="Loads iptables rule sets with extended syntax"
+description="Loads IPv6 iptables rule sets with extended syntax"
 description_start="Load the ruleset"
 description_stop="Do nothing"
 description_restart="Reload the ruleset (same as start)"
@@ -22,10 +22,10 @@ depend() {
 load_minimal() {
   # Try to load the minimal rule set, so we have a base line we can go
   # back to if loading of the actual rule file fails during boot
-  if [[ -r /etc/fina/minimal.rules ]]; then
+  if [[ -r /etc/fina/minimal6.rules ]]; then
     ebegin 'Trying to load minimal rule set'
     # if this fails, there's nothing we can do except print an errmsg
-    iptables-restore < /etc/fina/minimal.rules 
+    ip6tables-restore < /etc/fina/minimal6.rules 
     eend $?
   fi
 }
@@ -33,7 +33,7 @@ load_minimal() {
 start_fina()
 {
   ebegin "Loading full ruleset"
-  fina -l 
+  fina6 -l 
   eend $?
 }
 

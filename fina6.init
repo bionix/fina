@@ -3,11 +3,11 @@
 #
 # Written by Tobias Klausmann klausman-fina at schwarzvogel.de
 
-DAEMON="/sbin/fina"
-NAME="fina"
+DAEMON="/sbin/fina6"
+NAME="fina6"
 
 # Load defaults if exists
-[ -r /etc/default/fina ] && . /etc/default/fina
+[ -r /etc/default/fina6 ] && . /etc/default/fina6
 
 # Is fina disabled?
 case "$ENABLE_FINA" in
@@ -19,10 +19,10 @@ esac
 load_minimal() {
   # First, try to load the minimal rule set, so we have a base line we can go
   # back to if loading of the actual rule file fails
-  if [[ -r /etc/fina/minimal.rules ]]; then
-    echo -n 'Trying to load minimal rule set...'
+  if [[ -r /etc/fina/minimal6.rules ]]; then
+    echo -n 'Trying to load minimal IPv6 rule set...'
     # if this fails, theres nothing we can do except print an errmsg
-    MSG=$(iptables-restore < /etc/fina/minimal.rules 2>&1)
+    MSG=$(ip6tables-restore < /etc/fina/minimal6.rules 2>&1)
     RETVAL=$?
     if [[ $RETVAL != 0 ]]; then
       echo "failed ($MSG)" >&2
@@ -34,7 +34,7 @@ load_minimal() {
 
 start_fina()
 {
-  echo -n "Loading full ruleset..."
+  echo -n "Loading full IPv6 ruleset..."
   MSG=$("$DAEMON" -l 2>&1)
   RETVAL=$?
   if [[ $RETVAL != 0 ]]; then
@@ -46,7 +46,7 @@ start_fina()
 
 load_minimal()
 {
-  echo -n "Loading minimal ruleset..."
+  echo -n "Loading minimal IPv6 ruleset..."
   MSG=$("$DAEMON" -m 2>&1)
   RETVAL=$?
   if [[ $RETVAL != 0 ]]; then
@@ -64,7 +64,7 @@ stop_fina()
 
 case "$1" in
   start)
-    echo "Starting fina: "
+    echo "Starting fina6: "
     load_minimal
     start_fina
     ;;
@@ -73,11 +73,11 @@ case "$1" in
     exit 0
     ;;
   restart)
-    echo -n "Restarting fina: "
+    echo -n "Restarting fina6: "
     start_fina
     ;;
   minimal)
-    echo -n "Loading minimal ruleset: "
+    echo -n "Loading minimal IPv6 ruleset: "
     load_minimal
     ;;
   *)
