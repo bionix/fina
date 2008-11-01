@@ -101,9 +101,6 @@ KEEPTEMP=0
 LOAD=0
 MINIMAL=0
 
-# Get cfg file contents
-. "${FINACFG}" || die "Could not load config from $FINACFG"
-
 # Parse cmdline
 while test -n "$1"; do
     case "$1" in
@@ -137,6 +134,9 @@ while test -n "$1"; do
     esac
     shift
 done
+
+# Get cfg file contents
+. "${FINACFG}" || die "Could not load config from $FINACFG"
 
 dprint "After cmdline. Programs are:"
 dprint "FIND='$FIND'"
