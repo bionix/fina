@@ -16,7 +16,7 @@ IPTRESTORE=$(which iptables-restore)
 IPTSAVE=$(which iptables-save)
 # --------------- Nothing to configure below here --------------- #
 
-PROGNAME="$0"
+PROGNAME=$(basename "$0")
 VERSION="0.2.0"
 DEBUG="0"
 
