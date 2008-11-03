@@ -2,7 +2,7 @@
 
 # $Id$
 
-# Fina v0.2.0 Copyright (C) 2007 Tobias Klausmann
+# Fina v0.2.1 Copyright (C) 2007 Tobias Klausmann
 # Released under the GPLv2. See the file COPYING for details.
 
 # This is the place where the main config file resides.
@@ -17,7 +17,7 @@ IPTSAVE=$(which iptables-save)
 # --------------- Nothing to configure below here --------------- #
 
 PROGNAME=$(basename "$0")
-VERSION="0.2.0"
+VERSION="0.2.1"
 DEBUG="0"
 
 # Help function
