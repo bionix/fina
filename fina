@@ -161,7 +161,8 @@ if [[ $MINIMAL == 1 ]]; then
             exit 0
         fi
     else
-        echo "no minimal rule set found, skipping."
+        echo "no minimal rule set found, doing nothing."
+        exit 0
     fi
 fi
 
