@@ -1,0 +1,16 @@
+This package was debianized by Alexander Gedak <packages@freenet-rz.de> on
+Tue, 26 Feb 2008 17:41:22 +0100.
+
+It was downloaded from http://eric.schwarzvogel.de/svn/repos/fina
+
+Upstream Author: Tobias Klausmann <klausman@schwarzvogel.de>
+
+Copyright: 2008 by Tobias Klausmann
+
+License:
+
+GPL v2
+
+
+The Debian packaging is (C) 2008, root Alexander Gedak <packages@freenet-rz.de> and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.

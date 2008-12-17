@@ -1,0 +1,2 @@
+# Run fina at startup ?
+ENABLE_FINA=No

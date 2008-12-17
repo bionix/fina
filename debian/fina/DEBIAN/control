@@ -1,0 +1,12 @@
+Package: fina
+Version: 0.2.2-1
+Section: net
+Priority: extra
+Architecture: all
+Depends: iptables
+Installed-Size: 356
+Maintainer: Alexander Gedak <packages@freenet-rz.de>
+Description: Fina is an easy to use packetfilter script for freenet AG
+ Fina was originally written by Tobias Klausmann
+ Only a little bit of knowledge of the format used by iptables-save is
+ needed to use fina.

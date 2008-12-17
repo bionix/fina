@@ -1,3 +1,4 @@
 usr/bin
 usr/sbin
 etc/fina/rules.d/
+etc/fina/rules6.d/

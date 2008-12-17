@@ -1,0 +1,18 @@
+# Automatically added by dh_installinit
+if [ -x "/etc/init.d/fina" ]; then
+	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+		invoke-rc.d fina stop || exit $?
+	else
+		/etc/init.d/fina stop || exit $?
+	fi
+fi
+# End automatically added section
+# Automatically added by dh_installinit
+if [ -x "/etc/init.d/fina6" ]; then
+	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+		invoke-rc.d fina6 stop || exit $?
+	else
+		/etc/init.d/fina6 stop || exit $?
+	fi
+fi
+# End automatically added section

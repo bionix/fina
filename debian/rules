@@ -53,7 +53,8 @@ binary-arch: build install
 #	dh_installpam
 #	dh_installmime
 #	dh_python
-	dh_installinit
+	dh_installinit 
+	dh_installinit --name fina6
 #	dh_installcron
 #	dh_installinfo
 	dh_installman debian/fina.8

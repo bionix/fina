@@ -1,0 +1,252 @@
+#!/bin/bash
+
+# $Id: fina6 77 2008-12-17 14:31:37Z klausman $
+
+# Fina v0.2.1 Copyright (C) 2007 Tobias Klausmann
+# Released under the GPLv2. See the file COPYING for details.
+
+# This is the place where the main config file resides.
+FINACFG="/etc/fina/fina.cfg"
+
+# If on your system, some tools are on a different PATH, you can
+# configure them here
+FIND=$(which find)
+SORT=$(which sort)
+IPTRESTORE=$(which ip6tables-restore)
+IPTSAVE=$(which ip6tables-save)
+# --------------- Nothing to configure below here --------------- #
+
+PROGNAME=$(basename "$0")
+VERSION="0.2.2"
+DEBUG="0"
+
+# Help function
+function print_help() {
+    {
+    echo "Usage: ${PROGNAME} --help|-h"
+    echo "   or: ${PROGNAME} [OPTIONS]" 
+    echo "" 
+    echo "Options:" 
+    echo "   -v, --version    Output script version, then exit."
+    echo "   -p, --pretend    Don't load rules, just print them to stdout. (default)" 
+    echo "   -l, --load       Create rules and load them" 
+    echo "   -m, --minimal    Load minimal ruleset (implies -l)"
+    echo "   -t, --terse      Remove all comments and empty lines from output when in"
+    echo "                    'pretend' mode"
+    echo "   -k, --keep       Keep files generated in /tmp"
+    echo "" 
+    echo "The modes -p and -l are mutually exclusive, the last one of those encountered"
+    echo "on the command line is used."
+    } >&2
+}
+
+function print_version() {
+    echo "Fina6 version $VERSION"
+    echo "(C) 2007 Tobias Klausmann." 
+    echo "This is free software"  
+    echo "You may redistribute copies of it under the terms of the GNU GPLv2"
+    echo "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+    echo "There is NO WARRANTY, to the extent permitted by law."
+}
+
+# Debug printing 
+function dprint() {
+    if [[ $DEBUG == 1 ]]; then
+        echo  -e "$@" >&2
+    fi
+}
+
+# Error printing 
+function eprint() {
+    echo  -e "$@" >&2
+}
+
+# Exit with message and error code
+function die() {
+    eprint "$@"
+    exit -1
+}
+
+# Function that retrieves all rule files in lexical order
+function get_rule_files () {
+    # The trailing / is necessary in case ${RULESDIR} is a symlink
+    $FIND ${RULES6DIR}/ -name \*.rules -a \( -type f -o -type l \) -print|$SORT
+}
+
+# Function to create a temporary space for the file(s) we create
+function get_tmpdir () {
+    local UMASK=$(umask) # So we can restore it
+    local OK=1
+    local TRIES=3
+    local TMPDIR=''
+    umask 0077
+    while [[ $OK != 0 && "$TRIES" -gt 0 ]]; do
+        TMPDIR=/tmp/${PROGNAME}-${RANDOM}${RANDOM}
+        TRIES=$(($TRIES-1))
+        dprint "Trying to create $TMPDIR (tries left: $TRIES)" >&2
+        mkdir "$TMPDIR" && OK=0
+    done
+    if [[ $OK != 0 ]]; then
+        eprint "Could not create TMPDIR '${TMPDIR}'."
+        exit -1
+    fi
+    echo "${TMPDIR}"
+    umask "$UMASK"
+}
+
+# Defaults
+PRETEND=1
+TERSE=0
+KEEPTEMP=0
+LOAD=0
+MINIMAL=0
+
+# Parse cmdline
+while test -n "$1"; do
+    case "$1" in
+        --help|-h)
+            print_help
+            exit 0
+            ;;
+        --version|-v)
+            print_version
+            exit 0
+            ;;
+        --pretend|-p)
+            PRETEND=1
+            ;;
+        --keep|-k)
+            KEEPTEMP=1
+            ;;
+        --load|-l)
+            PRETEND=0
+            ;;
+        --terse|-t)
+            TERSE=1
+            ;;
+        --minimal|-m)
+            MINIMAL=1
+            ;;
+        *)
+            echo "Unknown option '$1'"
+            print_help
+            exit 1
+    esac
+    shift
+done
+
+# Get cfg file contents
+. "${FINACFG}" || die "Could not load config from $FINACFG"
+
+dprint "After cmdline. Programs are:"
+dprint "FIND='$FIND'"
+dprint "SORT='$SORT'"
+dprint "IPTRESTORE='$IPTRESTORE'"
+dprint "IPTSAVE='$IPTSAVE'"
+dprint ""
+dprint "Program mode: PRETEND=$PRETEND KEEPTEMP=$KEEPTEMP LOAD=$LOAD MINIMAL=$MINIMAL"
+
+# If we are asked to load the minimal ruleset, things are rather simple
+if [[ $MINIMAL == 1 ]]; then
+    if [[ -r /etc/fina/minimal6.rules ]]; then
+        echo -n 'Trying to load minimal IPv6 rule set...'
+        # if this fails, theres nothing we can do except print an errmsg
+        MSG=$($IPTRESTORE < /etc/fina/minimal6.rules 2>&1)
+        RETVAL=$?
+        if [[ $RETVAL != 0 ]]; then
+            echo "failed ($MSG)" >&2
+            exit $RETVAL
+        else
+            echo "ok"
+            exit 0
+        fi
+    else
+        echo "No minimal IPv6 rule set found, doing nothing."
+        exit 0
+    fi
+fi
+
+# First, execute pre-up.sh
+if [[ -x /etc/fina/pre6-up.sh ]]; then
+    /etc/fina/pre6-up.sh
+fi
+
+# Now, lets get the rule files
+dprint "Searching for IPv6 rules in '${RULES6DIR}'"
+dprint "Found:\n$(get_rule_files)"
+
+if [[ $(get_rule_files) == "" ]]; then
+    die "No IPv6 rules found, exiting. Your existing IPv6 ruleset wasn't touched."
+fi
+
+# Get a tmpfile to put assembled rules in
+TMPDIR=$(get_tmpdir)
+
+# Save the old rules if we're not pretending -or- if we're told to keep stuff
+if [[ $PRETEND != 1 || $KEEPTEMP == 1 ]]; then
+    $IPTSAVE > $TMPDIR/rules.old
+fi
+
+
+# Generate the new rule file
+{
+    echo -n "#Fina6# Generated by Fina6 v${VERSION} on "
+    date -Is
+    echo 
+    # We can't re-use $RULEFILES here since we need to handle spaces 
+    # in filenames
+    get_rule_files|while read RULEFILE; do 
+        echo "#Fina6# BEGIN of file '$RULEFILE'"
+        # Comments only work if there is *nothing* before the #, so
+        # we remove all trailing comments (first expression) and remove
+        # all whitespace-sequences before comment line (second expression)
+        # The LC_ALL env var is necessary so that we can munge files
+        # containing UTF characters (in names, for example)
+        LC_ALL=C sed -re 's/([^	 ]+)[	 ]*#.*/\1/g' -e 's/^[   ]*#/#/g' "$RULEFILE"
+        RETVAL=$?
+        if [[ $RETVAL != 0 ]]; then
+            eprint "Could not open '$RULEFILE' (Error code '$RETVAL')"
+            eprint "I have left all the files I generated in $TMPDIR"
+            exit -2
+        fi
+        echo "#Fina6# END of file '$RULEFILE'"
+    done
+    echo -n "#Fina6# Generation complete on "
+    date -Is 
+} > "$TMPDIR/rules.new"
+
+if [[ $PRETEND == 1 ]]; then
+    if [[ $TERSE == 1 ]]; then
+        grep -Ev '(^$|^[[:space:]]*#)' -- "$TMPDIR/rules.new"
+    else
+        cat "$TMPDIR/rules.new"
+    fi
+else
+    dprint "Loading IPv6 rules from file $TMPDIR/rules.new"
+    MESG=$($IPTRESTORE < "$TMPDIR/rules.new" 2>&1)
+    RETVAL=$?
+    if [[ $RETVAL != 0 ]]; then
+        eprint "Something went wrong (retval $RETVAL). Message:"
+        eprint "$MESG"
+        eprint "Loading old IPv6 ruleset from $TMPDIR/rules.old"
+        MESG=$($IPTRESTORE < "$TMPDIR/rules6.old" 2>&1)
+        RETVAL=$?
+        if [[ $RETVAL != 0 ]]; then
+            eprint "Even the old IPv6 ruleset could not be loaded. Message:"
+            eprint "$MESG"
+        fi
+        eprint "I have left all the files I generated in $TMPDIR"
+        exit -1
+    fi
+fi
+
+if [[ $KEEPTEMP != 1 ]]; then
+    rm -rf $TMPDIR
+fi
+
+# Finally, execute post-up.sh
+if [[ -x /etc/fina/post6-up.sh ]]; then
+    /etc/fina/post6-up.sh
+fi
+
+# vim: tabstop=4:shiftwidth=4:smarttab:expandtab:softtabstop=4:smartindent

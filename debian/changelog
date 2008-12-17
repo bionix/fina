@@ -1,3 +1,10 @@
+fina (0.2.2-1) unstable; urgency=low
+
+  * Add ipv6 support 
+  * Bugfixes fpr the pst scripts
+
+ -- Ruben Puettmann <ruben.puettmann@freenet.ag>  Wed, 17 Dec 2008 15:43:57 +0100
+
 fina (0.1.4-3) unstable; urgency=low
 
   * 
