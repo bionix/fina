@@ -161,7 +161,8 @@ if [[ $MINIMAL == 1 ]]; then
             exit 0
         fi
     else
-        echo "no minimal IPv6 rule set found, skipping."
+        echo "No minimal IPv6 rule set found, doing nothing."
+        exit 0
     fi
 fi
 
