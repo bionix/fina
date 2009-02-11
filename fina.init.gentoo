@@ -52,7 +52,7 @@ stop() {
   exit 0
 }
 
-minmal() {
+minimal() {
    load_minimal
 }
 
