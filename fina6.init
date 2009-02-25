@@ -1,4 +1,4 @@
-#! /bin/sh -e
+#! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          packetfilter_ipv6
 # Required-Start:    $network $local_fs
