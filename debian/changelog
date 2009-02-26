@@ -1,4 +1,5 @@
-fina (0.2.3) unstable; urgency=low
+fina (0.2.3) oldstable stable testing unstable; urgency=low
+
   * Fixed init-script SNAFU (-e)
 
  -- Tobias Klausmann <klausman@schwarzvogel.de> Thu, 26 Feb 2008 23:54:47 +0100
