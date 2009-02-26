@@ -17,7 +17,7 @@ IPTSAVE=$(which ip6tables-save)
 # --------------- Nothing to configure below here --------------- #
 
 PROGNAME=$(basename "$0")
-VERSION="0.2.2"
+VERSION="0.2.3"
 DEBUG="0"
 
 # Help function
