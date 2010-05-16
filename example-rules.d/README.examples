@@ -1,0 +1,79 @@
+Example rule set for fina
+-------------------------
+
+This is an example IPv4 rule set for fina, trying to illustrate how fina
+can be used. Obviously, you can do entirely different things with it.
+
+The rule set makes a few assumptions about network structure:
+
+- eth0 is the internal interface and has one net: 172.16.0.0/24
+- ppp0 is the external interface (for example a PPPoE interface on top of
+  eth1)
+- All the internal traffic is masqueraded (NAT)
+- ICMP is allowed globally (this is actually a good idea, since
+  filtering ICMP makes discovering network problems very complicated or
+  downright impossible).
+
+The rule files
+--------------
+
+Here's a breakdown of what each rule file does:
+
+filter-010_early.rules
+Sets up rules that allow unhindered traffic across the loopback
+interface. Also allows ICMP globally
+
+filter-020_logging_dropping.rules
+Sets up dedicated chains for logging and rejecting packets (lrd) and
+simply rejecting them (rd). Both chains are rate limited so in the event
+of a lot of accesses, the machine isn't brought to its knees so easily
+
+filter-030_tcpcheck.rules
+A chain to check for illegal combinations of TCP header flags. These
+packets are often used in stealthy scans and OS fingerprinting. It also
+contains a rule for INVALID packets (packets that *should* have a
+conntrack entry but don't).
+
+filter-031_conntracking.rules
+A set of (commented out) rules that enable conntracking. These rules
+allow all traffic from the inside (masqueraded) to the outside, in two
+blocks, one for ESTABLISHED connections, one for RELATED (like FTP data
+connections if you load the FTP conntrack module).
+
+filter-040_rfc1918.rules
+This file drops all RFC1918 traffic on the external interface (our own
+traffic there is masqueraded). The second part rejects everything except
+our own 172.16.0.0/24 so it can be masqueraded in POSTROUTING. Note that
+the rule allowing our own net is commented out for security reasons.
+
+filter-050_custom.rules
+A nice place to put any custom rules you might want to add.
+
+filter-100_kiddie.rules
+A set of rules that drops without logging some common traffic that you
+probably don't want (like Windows NetBIOS/NetBEUI or myDoom). No logging
+is done since it's useless to complain to people about such
+transgressions.
+
+filter-120_local_services.rules
+The file to put (semi) public services of your firewall into. One
+commented-out example is ident.
+
+filter-130_routed_services.rules
+A file for rules regarding services that may/may not be used from the
+inside. The rules disallow IRC (on one port only) but allow everything
+else.
+
+nat-300_nat_header_table.rules
+Setup of the NAT table. The policies are set to accept since all
+filtering in this setup is done in the FORWARD chain of the filter
+table.
+
+nat-310_masquerading.rules
+Contains one rule which masquerades our internal /24.
+
+nat-399_nat_table_end.rules
+The final commit for Netfilter
+
+
+
