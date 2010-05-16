@@ -1,6 +1,7 @@
-# Copyright 1999-2008 Gentoo Foundation
-# Distributed under the terms of the GNU General Public License v2
-# $Header: $
+# Note that this file has to be renamed to fina-<version>.ebuild to
+# work properly. For v0.2.3, the name would be fina-0.2.3.ebuild.
+# Also, it needs to be in an overlay directory, for example 
+# /usr/local/portage/net-firewall/fina/
 
 DESCRIPTION="Fina is a Netfilter script for admins who know what they're doing."
 HOMEPAGE="http://www.schwarzvogel.de/software-fina.shtml"
