@@ -109,6 +109,13 @@ iptables-restore command.
 Finally, fina will execute /etc/fina/post-up.sh if it exists and is
 executable.
 
+Note that the init scripts have no real "Stop" action. It's not quite
+clear what stopping a packetfilter means: if it does mean no rules at
+all, what is the default policy? Hence, I recommend using the minimal
+set for emergencies that ask for only the basic necessities of keeping
+administrative access - which is one of the more useful meanings of
+"stop". Use the -m switch to fina for this.
+
 Dependencies
 ------------
 
