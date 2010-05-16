@@ -1,6 +1,0 @@
-# This file contains the last rules for the filter table.
-# Usually, this file only contains the COMMIT to complete the table loading.
-
-COMMIT
-
-# vim: ft=sh
