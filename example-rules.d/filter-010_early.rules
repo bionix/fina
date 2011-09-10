@@ -1,5 +1,7 @@
 # This file is for policy-independent early rules
 
+*filter
+
 # The loopback interface is safe 
 -A OUTPUT -o lo -j ACCEPT 
 -A INPUT -i lo -j ACCEPT 
