@@ -7,6 +7,7 @@
 
 # This is the place where the main config file resides.
 FINACFG="/etc/fina/fina.cfg"
+IPSETFILE="/etc/fina/ipsets"
 
 # If on your system, some tools are on a different PATH, you can
 # configure them here
@@ -65,6 +66,24 @@ function eprint() {
 function die() {
     eprint "$@"
     exit -1
+}
+
+# Function that creates all sets listed in $IPSETFILE
+function create_ipsets() {
+    if [[ "$(which ipset 2>/dev/null)" == "" ]]; then
+        dprint "No ipset binary, not creating any ipsets."
+        return
+    fi
+    if [[ ! -f ${IPSETFILE} ]]; then
+        dprint "No ipset file at ${IPSETFILE}, not creating any ipsets."
+        return
+    fi
+    local sets
+    sets=$(sed -e 's/#.*//g' ${IPSETFILE})
+    for ipset in ${sets}; do
+        dprint "Creating ipset ${ipset}."
+        ipset -exist -N "${ipset}" iphash
+    done
 }
 
 # Function that retrieves all rule files in lexical order
@@ -187,6 +206,8 @@ if [[ $PRETEND != 1 || $KEEPTEMP == 1 ]]; then
     $IPTSAVE > $TMPDIR/rules.old
 fi
 
+# Creating ipsets is idempotent aside from error messages
+create_ipsets
 
 # Generate the new rule file
 {
