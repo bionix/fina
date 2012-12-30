@@ -82,7 +82,7 @@ function create_ipsets() {
     sets=$(sed -e 's/#.*//g' ${IPSETFILE})
     for ipset in ${sets}; do
         dprint "Creating ipset ${ipset}."
-        ipset -exist -N "${ipset}" iphash
+        ipset -exist -N "${ipset}" iphash family inet6
     done
 }
 
