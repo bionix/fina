@@ -7,7 +7,7 @@
 
 # This is the place where the main config file resides.
 FINACFG="/etc/fina/fina.cfg"
-IPSETFILE="/etc/fina/ipsets"
+IPSETS="/etc/fina/ipsets"
 
 # If on your system, some tools are on a different PATH, you can
 # configure them here
@@ -15,7 +15,12 @@ FIND=$(which find)
 SORT=$(which sort)
 IPTRESTORE=$(which iptables-restore)
 IPTSAVE=$(which iptables-save)
+IPSET=$(which ipset)
 # --------------- Nothing to configure below here --------------- #
+# For debugging
+#IPTRESTORE="echo iptables-restore"
+#IPTSAVE="echo iptables-save"
+#IPSET="echo ipset"
 
 PROGNAME=$(basename "$0")
 VERSION="0.2.4"
@@ -68,21 +73,31 @@ function die() {
     exit -1
 }
 
-# Function that creates all sets listed in $IPSETFILE
+# Function that creates all sets listed in $IPSETS/*.set and populates them
+# with the files' contents sans comments.
 function create_ipsets() {
-    if [[ "$(which ipset 2>/dev/null)" == "" ]]; then
+    if [[ -x "${IPSET}" ]]; then
         dprint "No ipset binary, not creating any ipsets."
         return
     fi
-    if [[ ! -f ${IPSETFILE} ]]; then
-        dprint "No ipset file at ${IPSETFILE}, not creating any ipsets."
+    if [[ ! -d ${IPSETS} ]]; then
+        dprint "No ipset dir at ${IPSETS}, not creating any ipsets."
         return
     fi
     local sets
-    sets=$(sed -e 's/#.*//g' ${IPSETFILE})
+    sets=$(find ${IPSETS} -type f -name \*.set)
     for ipset in ${sets}; do
-        dprint "Creating ipset ${ipset}."
-        ipset -exist -N "${ipset}" iphash
+        local setname=$(basename ${ipset} .set)
+        dprint "Creating ipset ${setname}."
+        ${IPSET} -exist -N "${setname}" iphash
+        dprint "Populating ipset ${setname}"
+        # Similar to rule files, we need to remove comments.
+        local entries=$(LC_ALL=C sed -re 's/#.*//g' < "${ipset}")
+        for entry in ${entries}; do
+            dprint "Adding entry ${entry} to ${setname}"
+            # We rely on ipset's auto-expansion of netmasks and ranges.
+            ${IPSET} -exist -A "${setname}" "${entry}"
+        done
     done
 }
 
@@ -207,6 +222,7 @@ if [[ $PRETEND != 1 || $KEEPTEMP == 1 ]]; then
 fi
 
 # Creating ipsets is idempotent aside from error messages
+dprint "Creating ipsets"
 create_ipsets
 
 # Generate the new rule file
